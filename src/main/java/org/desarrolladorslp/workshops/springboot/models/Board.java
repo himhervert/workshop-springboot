@@ -52,4 +52,33 @@ public class Board {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+
+        Board board = (Board) object;
+
+        if (id != board.id) return false;
+        if (name != null ? !name.equals(board.name) : board.name != null) return false;
+        return user != null ? user.equals(board.user) : board.user == null;
+    }
+
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (int) (id ^ (id >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        return result;
+    }
+
+    @java.lang.Override
+    public java.lang.String toString() {
+        return new java.util.StringJoiner(", ", Board.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("name='" + name + "'")
+                .add("user=" + user)
+                .toString();
+    }
 }
