@@ -2,7 +2,6 @@ package org.desarrolladorslp.workshops.springboot.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "boards",
@@ -20,20 +24,23 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(length = 100)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @NotNull
     private User user;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -57,28 +64,13 @@ public class Board {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         if (!super.equals(object)) return false;
-
         Board board = (Board) object;
-
-        if (id != board.id) return false;
-        if (name != null ? !name.equals(board.name) : board.name != null) return false;
-        return user != null ? user.equals(board.user) : board.user == null;
+        return id == board.id &&
+                java.util.Objects.equals(name, board.name) &&
+                java.util.Objects.equals(user, board.user);
     }
 
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        return result;
-    }
-
-    @java.lang.Override
-    public java.lang.String toString() {
-        return new java.util.StringJoiner(", ", Board.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .add("user=" + user)
-                .toString();
+        return java.util.Objects.hash(super.hashCode(), id, name, user);
     }
 }
